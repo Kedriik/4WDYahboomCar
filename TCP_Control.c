@@ -1,7 +1,7 @@
 /**
 * @par Copyright (C): 2010-2019, Shenzhen Yahboom Tech
 * @file         tcp_control.c
-* @author       Danny
+* @author       Danny, Kedro
 * @version      V1.0
 * @date         2017.08.16
 * @brief        
@@ -121,6 +121,7 @@ int ServoUpDownPos = 90;
 int ServoLeftRightPos = 90;
 
 int FrontServoLeftRightPos = 90;
+int ServoSpeed = 10;
 
 int ServoFlags;
 
@@ -309,11 +310,26 @@ void follow_light_test()
   return;
 }
 
-
+/**
+* Function       brake
+* @author        Kedro
+* @date          2019.10.19
+* @brief         
+* @param[out]    void
+* @retval        void
+* @par History   
+*/
+void brake()
+{
+  digitalWrite(Left_motor_go, LOW);
+  digitalWrite(Left_motor_back, LOW);
+  digitalWrite(Right_motor_go, LOW);
+  digitalWrite(Right_motor_back, LOW);
+}
 /**
 * Function       run
-* @author        Danny
-* @date          2017.08.16
+* @author        Kedro
+* @date          2019.10.19
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -337,27 +353,9 @@ void run(){
 }
 
 /**
-* Function       brake
-*  @author       Danny
-* @date          2017.08.16
-* @brief         
-* @param[out]    void
-* @retval        void
-* @par History   
-*/
-void brake()
-{
-	printf("brake\n");
-  digitalWrite(Left_motor_go, LOW);
-  digitalWrite(Left_motor_back, LOW);
-  digitalWrite(Right_motor_go, LOW);
-  digitalWrite(Right_motor_back, LOW);
-}
-
-/**
 * Function       left
-* @author        Danny
-* @date          2017.08.16
+* @author        Kedro
+* @date          2019.10.19
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -380,8 +378,8 @@ void left()
 
 /**
 * Function       spin_left
-* @author        Danny
-* @date          2017.08.16
+* @author        Kedro
+* @date          2019.10.19
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -404,8 +402,8 @@ void spin_left()
 
 /**
 * Function       right
-* @author        Danny
-* @date          2017.08.16
+* @author        Kedro
+* @date          2019.10.19
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -428,8 +426,8 @@ void right()
 
 /**
 * Function       spin_right
-* @author        Danny
-* @date          2017.08.16
+* @author        Kedro
+* @date          2019.10.19
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -452,8 +450,8 @@ void spin_right()
 
 /**
 * Function       back
-* @author        Danny
-* @date          2017.08.16
+* @author        Kedro
+* @date          2019.10.19
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -500,8 +498,8 @@ void whistle()
 
 /**
 * Function       servo_up
-* @author        Danny
-* @date          2017.08.16
+* @author        Kedro
+* @date          2019.10.19
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -510,21 +508,18 @@ void whistle()
 */
 void servo_up()
 {
-    int pos, i;
-    pos = ServoUpDownPos;
-	servo_pulse(ServoUpDownPin, pos); 
-	pos += 2;
-	ServoUpDownPos = pos;
+	ServoUpDownPos += ServoSpeed;
 	if (ServoUpDownPos >= 180)
 	{
 		ServoUpDownPos = 180;
 	}
+	servo_pulse(ServoUpDownPin, ServoUpDownPos); 
 }
 
 /**
 * Function       servo_down
-* @author        Danny
-* @date          2017.08.16
+* @author        Kedro
+* @date          2019.10.19
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -533,21 +528,18 @@ void servo_up()
 */
 void servo_down()
 {
-    int pos, i;
-    pos = ServoUpDownPos;
-   	servo_pulse(ServoUpDownPin, pos); 
-	pos -= 2;
-	ServoUpDownPos = pos;
+	ServoUpDownPos -= ServoSpeed;
 	if (ServoUpDownPos <= 45)
 	{
 		ServoUpDownPos = 45;
 	}
+	servo_pulse(ServoUpDownPin, ServoUpDownPos); 
 }
 
 /**
 * Function       servo_left
-* @author        Danny
-* @date          2017.08.16
+* @author        Kedro
+* @date          2019.10.19
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -556,22 +548,18 @@ void servo_down()
 */
 void servo_left()
 {
-	printf("Servo left");
-    int pos, i;
-    pos = ServoLeftRightPos;
-   	servo_pulse(ServoLeftRightPin, pos); 
-	pos += 2;
-	ServoLeftRightPos = pos;
+	ServoLeftRightPos += ServoSpeed;
 	if (ServoLeftRightPos >= 180)
 	{
 		ServoLeftRightPos = 180;
 	}
+	servo_pulse(ServoLeftRightPin, ServoLeftRightPos); 
 }
 
 /**
 * Function       servo_right
-* @author        Danny
-* @date          2017.08.16
+* @author        Kedro
+* @date          2019.10.19
 * @brief        
 * @param[in]     void
 * @param[out]    void
@@ -580,15 +568,12 @@ void servo_left()
 */
 void servo_right()
 {  
-    int pos, i;
-    pos = ServoLeftRightPos;
-   	servo_pulse(ServoLeftRightPin, pos); 
-	pos -= 2;
-	ServoLeftRightPos = pos;
+	ServoLeftRightPos -= ServoSpeed;
 	if (ServoLeftRightPos <= 0)
 	{
 		ServoLeftRightPos = 0;
 	}
+	servo_pulse(ServoLeftRightPin, ServoLeftRightPos); 
 }
 
 /**
@@ -747,8 +732,8 @@ int StringFind(const char *pSrc, const char *pDst, int v_iStartPos)
 
 /**
 * Function       tcp_data_parse
-* @author        Danny
-* @date          2017.08.16
+* @author        Danny,Kedro
+* @date          2019.10.19
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -813,32 +798,8 @@ void tcp_data_parse()
 
   if (StringFind((const char *)InputString, (const char *)"4WD", 0) > -1 &&
 		                    StringFind((const char *)InputString,(const char *)"#",0) > 0){
-  	printf("Input string:%s \n ", &InputString);
-  	printf("InputString[4] = %c \n", InputString[4]);
-    
-  	if(InputString[4] == '1'){
-  		g_CarState = enRUN;
-  	}
-  	else if(InputString[4] == '2'){
-  		g_CarState = enBACK;
-	}
-	else if(InputString[4] == '3'){
-  		g_CarState = enLEFT;
-	}
-    else if(InputString[4] == '4'){
-  		g_CarState = enRIGHT;
-	}
-	else if(InputString[4] == '5'){
-  		g_CarState = enTLEFT;
-	}
-	else if(InputString[4] == '6'){
-  		g_CarState = enTRIGHT;
-	}
-  	else{
-  		g_CarState = enSTOP;
-  	}
-
-  	switch (g_CarState){
+	int action = InputString[4] - '0';
+  	switch (action){
       case enSTOP: brake(); break;
       case enRUN: run(); break;
       case enLEFT: left(); break;
@@ -849,173 +810,35 @@ void tcp_data_parse()
       default: brake(); break;
     }
 
-    switch(InputString[9])
+
+	int cameraAction = InputString[9] - '0';
+	switch (cameraAction)
 	{
-		case front_left_servo: g_frontservopos = 180 ;break;
-		case front_right_servo: g_frontservopos = 0;break;
-	  	case up_servo:  g_ServoState = enSERVOUP; break;
-		case down_servo: g_ServoState = enSERVODOWN;break;
-		case left_servo: g_ServoState = enSERVOLEFT;break;
-		case right_servo: g_ServoState = enSERVORIGHT;break;
-		case updowninit_servo: g_ServoState = enSERVOUPDOWNINIT;break;
-		case stop_servo: g_ServoState = enSERVOSTOP;break;
+		case enSERVOUP: 			
+		servo_up();
+		break;
+		case enSERVODOWN: 			
+		servo_down();
+		break;
+		case enSERVOLEFT:			
+		servo_left();
+		break;
+		case enSERVORIGHT: 			
+		servo_right();
+		break;
+		case enSERVOUPDOWNINIT:
+		servo_updown_init();
+		break;
+		case enSERVOSTOP: 			
+		servo_stop();
+		case enSERVOFRONTINIT: 			
+		servo_init();
+		break;
 	}
-
-	// if (InputString[5] == '1')     
- //    {
- //      CarSpeedControl += 50;
- //      if (CarSpeedControl > 255)
- //      {
- //        CarSpeedControl = 255;
- //      }
- //    }
- //    if (InputString[5] == '2')    
- //    {
- //      CarSpeedControl -= 50;
- //      if (CarSpeedControl < 10)
- //      {
- //        CarSpeedControl = 10;
- //      }
- //    }
-
     memset(InputString, 0x00, sizeof(InputString));       
     NewLineReceived = 0;
   	return;
-    if (InputString[3] == '1')      
-    {
-      g_CarState = enTLEFT;
-    }
-    else if (InputString[3] == '2') 
-    {
-      g_CarState = enTRIGHT;
-    }
-    else
-    {
-      g_CarState = enSTOP;
-    }
-
-    if (InputString[5] == '1')     
-    {
-      whistle();
-    }
-
-    if (InputString[7] == '1')     
-    {
-      CarSpeedControl += 50;
-      if (CarSpeedControl > 255)
-      {
-        CarSpeedControl = 255;
-      }
-    }
-    if (InputString[7] == '2')    
-    {
-      CarSpeedControl -= 50;
-      if (CarSpeedControl < 50)
-      {
-        CarSpeedControl = 50;
-      }
-    }
-	
-    if (InputString[13] == '1')
-   
-    {
-		g_lednum++;
-        if(g_lednum == 1){
-		color_led_pwm(255, 255, 255);
-		}
-		else if(g_lednum == 2)
-		{
-			color_led_pwm(255,0,0);
-		}
-		else if(g_lednum == 3)
-        {
-			color_led_pwm(0,255,0);
-		}
-		else if(g_lednum == 4)
-		{
-			color_led_pwm(0,0,255);
-		}
-		else if(g_lednum == 5)
-		{
-			color_led_pwm(255,255,0);
-		}
-		else if(g_lednum == 6)
-		{
-			color_led_pwm(0,255,255);
-		}
-		else if(g_lednum == 7)
-		{
-			color_led_pwm(255,0,255);
-		}
-		else{
-		   color_led_pwm(0,0,0);
-			   g_lednum=0;
-		}
-    }
-    if (InputString[13] == '2')
-    {
-      color_led_pwm(255, 0, 0);
-    }
-    if (InputString[13] == '3')
-    {
-      color_led_pwm(0, 255, 0);
-    }
-    if (InputString[13] == '4') 
-    {
-      color_led_pwm(0, 0, 255);
-    }
-
-    if (InputString[15] == '1')  
-    {
-      digitalWrite(OutfirePin, !digitalRead(OutfirePin));
-    }
-
-    if (InputString[17] == '1') 
-    {
-		g_frontservopos = 90; 
 	}
-
-    if (g_CarState != enTLEFT && g_CarState != enTRIGHT)
-    {
-      switch (InputString[1])
-      {
-        case run_car:   g_CarState = enRUN;  break;
-        case back_car:  g_CarState = enBACK;  break;
-        case left_car:  g_CarState = enLEFT;  break;
-        case right_car: g_CarState = enRIGHT;  break;
-        case stop_car:  g_CarState = enSTOP;  break;
-        default: g_CarState = enSTOP; break;
-      }
-    }
-
-
-	switch(InputString[9])
-	{
-		case front_left_servo: g_frontservopos = 180 ;break;
-		case front_right_servo: g_frontservopos = 0;break;
-	    case up_servo:  g_ServoState = enSERVOUP; break;
-		case down_servo: g_ServoState = enSERVODOWN;break;
-		case left_servo: g_ServoState = enSERVOLEFT;break;
-		case right_servo: g_ServoState = enSERVORIGHT;break;
-		case updowninit_servo: g_ServoState = enSERVOUPDOWNINIT;break;
-		case stop_servo: g_ServoState = enSERVOSTOP;break;
-	}
-
-    memset(InputString, 0x00, sizeof(InputString));       
-    NewLineReceived = 0;
-
-    switch (g_CarState)
-    {
-      case enSTOP: brake(); break;
-      case enRUN: run(); break;
-      case enLEFT: left(); break;
-      case enRIGHT: right(); break;
-      case enBACK: back(); break;
-      case enTLEFT: spin_left(); break;
-      case enTRIGHT: spin_right(); break;
-      default: brake(); break;
-    }
-  }
 }
 
 /**
@@ -1152,7 +975,6 @@ void *servo_control()
 	int i_frontservopos = 0;
     while(1)
 	{
-		
 	   switch (g_ServoState)
 	   {
 	    case enSERVOUP: 			
@@ -1202,8 +1024,7 @@ void *do_client_postback(void *arg)
 	int sockfd = *(int *)arg;
 	char str[1024] ={0};
 	char *pstr = str;
-	while(1)
-	{   
+	while(1){   
         memset(str,0,sizeof(str));
 		strcpy(str,tcp_data_postback());
 		//puts(str);
@@ -1224,7 +1045,7 @@ void *do_client_postback(void *arg)
         sleep(10);		
         //printf("Wake\n");
 	}
-//	close(sockfd);
+	close(sockfd);
 //	free(arg);//é‡Šæ”¾å †åŒºç©ºé—´
 	pthread_exit(NULL);
 }
@@ -1310,16 +1131,13 @@ int main(int argc, const char *argv[])
   servo_init();
   
 
-	if(argc < 1)
-	{
+	if(argc < 1){
 		fprintf(stderr,"Usage : %s ip port!\n",argv[0]);	
 		exit(EXIT_FAILURE);
 	}
-
 	//1.Create a listening socket through a socket
 	listen_fd = socket(AF_INET,SOCK_STREAM,0);
-	if(listen_fd < 0)
-	{
+	if(listen_fd < 0){
 		perror("Fail to socket");	
 		exit(EXIT_FAILURE);
 	}
@@ -1345,41 +1163,30 @@ int main(int argc, const char *argv[])
 	
 	while(1)
 	{
-		
 		pconnect_fd = (int *)malloc(sizeof(int));
-
-		
 		*pconnect_fd = accept(listen_fd,(struct sockaddr *)&client_addr,&len);		
 		if(*pconnect_fd < 0)
 		{
 			perror("Fail to accept");	
 			exit(EXIT_FAILURE);
 		}
-
 		printf("=============================================\n");
 		printf("connect_fd : %d\n",*pconnect_fd);
 		printf("client IP : %s\n",inet_ntoa(client_addr.sin_addr));
 		printf("client port : %d\n", ntohs(client_addr.sin_port));
-
 		ret = pthread_create(&tid1,NULL,do_client_recv,(void *)pconnect_fd);
-		
-		
 		if(ret != 0)
 		{
 			fprintf(stderr,"Fail to pthread_create : %s\n",strerror(errno));	
 			exit(EXIT_FAILURE);
 		}
-				
-		ret = pthread_create(&tid3,NULL,servo_control,NULL);
-		
-		
-		if(ret != 0)
-		{
-			fprintf(stderr,"Fail to pthread_create : %s\n",strerror(errno));	
-			exit(EXIT_FAILURE);
-		}
+		// ret = pthread_create(&tid3,NULL,servo_control,NULL);
+		// if(ret != 0)
+		// {
+		// 	fprintf(stderr,"Fail to pthread_create : %s\n",strerror(errno));	
+		// 	exit(EXIT_FAILURE);
+		// }
 		ret = pthread_create(&tid2,NULL,do_client_postback,(void *)pconnect_fd);
-		
 		if(ret != 0)
 		{
 			fprintf(stderr,"Fail to pthread_create : %s\n",strerror(errno));	
@@ -1387,7 +1194,7 @@ int main(int argc, const char *argv[])
 		}
 		
 		pthread_detach(tid1);
-		pthread_detach(tid3);
+		//pthread_detach(tid3);
 		pthread_detach(tid2);
 	}
 	close(listen_fd);

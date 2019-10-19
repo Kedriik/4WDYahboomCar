@@ -41,29 +41,21 @@ MESSAGE = '$4WD{}{}0000{}00000000000#\n'
 def turnLeft(relax = 3):
     MESSAGE = '$4WD00000{}00000000000#\n'.format(enSERVOLEFT)
     s.send(MESSAGE.encode())
-    time.sleep(relax)
-    MESSAGE = '$4WD00000{}00000000000#\n'.format(enSERVOSTOP)
-    s.send(MESSAGE.encode())
     
 def turnRight(relax = 3):
     MESSAGE = '$4WD00000{}00000000000#\n'.format(enSERVORIGHT)
-    s.send(MESSAGE.encode())
-    time.sleep(relax)
-    MESSAGE = '$4WD00000{}00000000000#\n'.format(enSERVOSTOP)
     s.send(MESSAGE.encode())
     
 def turnUp(relax = 3):
     MESSAGE = '$4WD00000{}00000000000#\n'.format(enSERVOUP)
     s.send(MESSAGE.encode())
-    time.sleep(relax)
-    MESSAGE = '$4WD00000{}00000000000#\n'.format(enSERVOSTOP)
+    
+def init(relax = 3):
+    MESSAGE = '$4WD00000{}00000000000#\n'.format(enSERVOFRONTINIT)
     s.send(MESSAGE.encode())
     
 def turnDown(relax = 3):
     MESSAGE = '$4WD00000{}00000000000#\n'.format(enSERVODOWN)
-    s.send(MESSAGE.encode())
-    time.sleep(relax)
-    MESSAGE = '$4WD00000{}00000000000#\n'.format(enSERVOSTOP)
     s.send(MESSAGE.encode())
 
 def faster():
@@ -111,6 +103,7 @@ def get_image():
         nparr = np.fromstring(stream.read(), np.uint8)
         img_np = cv2.imdecode(nparr,cv2.IMREAD_COLOR)
         img_np = cv2.flip(img_np, 0)
+        img_np = cv2.flip(img_np, 1)
         cv2.imshow('i', img_np)
         
         if cv2.waitKey(25) & 0xFF==ord('q'):    
@@ -135,6 +128,8 @@ while(1):
         break
     elif command == 'cleft':
         turnLeft()
+    elif command == 'cinit':
+        init()
     elif command == 'cright':
         turnRight()
     elif command == 'cup':
