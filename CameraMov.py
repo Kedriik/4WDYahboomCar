@@ -31,6 +31,7 @@ enRIGHT = 4
 enTLEFT = 5
 enTRIGHT = 6
 
+g_CarSpeed = 3;
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((TCP_IP, TCP_PORT))
 #response  = s.recv(BUFFER_SIZE)
@@ -59,32 +60,51 @@ def turnDown(relax = 3):
     s.send(MESSAGE.encode())
 
 def faster():
-    MESSAGE = '$4WD{}{}0000{}00000000000#\n'.format(1,1,0)
-    s.send(MESSAGE.encode())
+    global g_CarSpeed
+    g_CarSpeed = g_CarSpeed + 1;
+    if(g_CarSpeed > 10):
+        g_CarSpeed = 10;
     
 def slower():
-    MESSAGE = '$4WD{}{}0000{}00000000000#\n'.format(1,2,0)
-    s.send(MESSAGE.encode())
+    global g_CarSpeed
+    g_CarSpeed = g_CarSpeed - 1;
+    if(g_CarSpeed < 1):
+        g_CarSpeed = 1
+def setCarSpeed(carSpeed):
+    global g_CarSpeed
+    g_CarSpeed = carSpeed;
+    if(g_CarSpeed < 1):
+        g_CarSpeed = 1
+    if(g_CarSpeed > 10):
+        g_CarSpeed = 10;
+        
 def run():
-    MESSAGE = '$4WD{}{}0000{}00000000000#\n'.format(enRUN,0,0)
+    global g_CarSpeed
+    MESSAGE = '$4WD{}{}0000{}00000000000#\n'.format(enRUN,g_CarSpeed,0)
     s.send(MESSAGE.encode())
 def back():
-    MESSAGE = '$4WD{}{}0000{}00000000000#\n'.format(enBACK,0,0)
+    global g_CarSpeed
+    MESSAGE = '$4WD{}{}0000{}00000000000#\n'.format(enBACK,g_CarSpeed,0)
     s.send(MESSAGE.encode())
 def stop():
-    MESSAGE = '$4WD{}{}0000{}00000000000#\n'.format(enSTOP,0,0)
+    global g_CarSpeed
+    MESSAGE = '$4WD{}{}0000{}00000000000#\n'.format(enSTOP,g_CarSpeed,0)
     s.send(MESSAGE.encode())
 def left():
-    MESSAGE = '$4WD{}{}0000{}00000000000#\n'.format(enLEFT,0,0)
+    global g_CarSpeed
+    MESSAGE = '$4WD{}{}0000{}00000000000#\n'.format(enLEFT,g_CarSpeed,0)
     s.send(MESSAGE.encode())
 def right():
-    MESSAGE = '$4WD{}{}0000{}00000000000#\n'.format(enRIGHT,0,0)
+    global g_CarSpeed
+    MESSAGE = '$4WD{}{}0000{}00000000000#\n'.format(enRIGHT,g_CarSpeed,0)
     s.send(MESSAGE.encode())
 def tright():
-    MESSAGE = '$4WD{}{}0000{}00000000000#\n'.format(enTRIGHT,0,0)
+    global g_CarSpeed
+    MESSAGE = '$4WD{}{}0000{}00000000000#\n'.format(enTRIGHT,g_CarSpeed,0)
     s.send(MESSAGE.encode())
 def tleft():
-    MESSAGE = '$4WD{}{}0000{}00000000000#\n'.format(enTLEFT,0,0)
+    global g_CarSpeed
+    MESSAGE = '$4WD{}{}0000{}00000000000#\n'.format(enTLEFT,g_CarSpeed,0)
     s.send(MESSAGE.encode())
 g_gather_response = True
 
@@ -125,6 +145,9 @@ while(1):
     if command == 'exit':
         g_gather_response = False;
         g_gather_image = False
+        MESSAGE = command + '\n'
+        MESSAGE = "$exit#\n"
+        s.send(MESSAGE.encode())
         break
     elif command == 'cleft':
         turnLeft()
@@ -148,6 +171,12 @@ while(1):
         stop()
     elif command == 'right':
         right()
+    elif command == 'step right':
+        right()
+        stop();
+    elif command == 'step left':
+        left()
+        stop();
     elif command == 'left':
         left()
     elif command == 'tright':

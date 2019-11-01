@@ -1,7 +1,7 @@
 /**
 * @par Copyright (C): 2010-2019, Shenzhen Yahboom Tech
 * @file         tcp_control.c
-* @author       Danny, Kedro
+* @author       Danny
 * @version      V1.0
 * @date         2017.08.16
 * @brief        
@@ -109,7 +109,7 @@ char LDR_value[3] = {0};
 int buzzer = 10;                
 
 
-int CarSpeedControl = 50;
+int CarSpeedControl = 1;
 
 
 int FrontServoPin = 4;
@@ -138,7 +138,8 @@ int OutfirePin = 8;
 char recvbuf[N] = {0};        
 char InputString[N] = {0};    
 int NewLineReceived = 0;      
-int g_CarState = enSTOP;      
+int g_CarState = enSTOP; 
+int g_DoContinue = 1;     
 int g_ServoState = enSERVOSTOP;
 char ReturnTemp[N] = {0};     
 unsigned char g_frontservopos = 90;
@@ -312,8 +313,8 @@ void follow_light_test()
 
 /**
 * Function       brake
-* @author        Kedro
-* @date          2019.10.19
+*  @author       Danny
+* @date          2017.08.16
 * @brief         
 * @param[out]    void
 * @retval        void
@@ -325,11 +326,14 @@ void brake()
   digitalWrite(Left_motor_back, LOW);
   digitalWrite(Right_motor_go, LOW);
   digitalWrite(Right_motor_back, LOW);
+
+  softPwmWrite(Left_motor_pwm, 0);
+  softPwmWrite(Right_motor_pwm, 0);
 }
 /**
 * Function       run
-* @author        Kedro
-* @date          2019.10.19
+* @author        Danny
+* @date          2017.08.16
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -337,25 +341,21 @@ void brake()
 * @par History   
 */
 void run(){
-  printf("Run\n");
-  digitalWrite(Left_motor_go, HIGH);   
-  digitalWrite(Left_motor_back, LOW);  
-  softPwmWrite(Left_motor_pwm, CarSpeedControl);
+	digitalWrite(Left_motor_go, HIGH);   
+	digitalWrite(Left_motor_back, LOW);  
+	softPwmWrite(Left_motor_pwm, CarSpeedControl);
 
-  digitalWrite(Right_motor_go, HIGH);  
-  digitalWrite(Right_motor_back, LOW); 
-  softPwmWrite(Right_motor_pwm, CarSpeedControl);
-
-  delay(100);
-
-  brake();
-
+	digitalWrite(Right_motor_go, HIGH);  
+	digitalWrite(Right_motor_back, LOW); 
+	softPwmWrite(Right_motor_pwm, CarSpeedControl);
+	delay(100);
+  //brake();
 }
 
 /**
 * Function       left
-* @author        Kedro
-* @date          2019.10.19
+* @author        Danny
+* @date          2017.08.16
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -364,7 +364,6 @@ void run(){
 */
 void left()
 {
-  printf("left\n");
   digitalWrite(Left_motor_go, LOW);     
   digitalWrite(Left_motor_back, LOW);   
   softPwmWrite(Left_motor_pwm, 0);
@@ -378,8 +377,8 @@ void left()
 
 /**
 * Function       spin_left
-* @author        Kedro
-* @date          2019.10.19
+* @author        Danny
+* @date          2017.08.16
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -388,7 +387,6 @@ void left()
 */
 void spin_left()
 {
-	printf("spin_left\n");
   digitalWrite(Left_motor_go, LOW);     
   digitalWrite(Left_motor_back, HIGH);  
   softPwmWrite(Left_motor_pwm, CarSpeedControl);
@@ -402,8 +400,8 @@ void spin_left()
 
 /**
 * Function       right
-* @author        Kedro
-* @date          2019.10.19
+* @author        Danny
+* @date          2017.08.16
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -412,7 +410,6 @@ void spin_left()
 */
 void right()
 {
-  printf("right\n");
   digitalWrite(Left_motor_go, HIGH);   
   digitalWrite(Left_motor_back, LOW);   
   softPwmWrite(Left_motor_pwm, CarSpeedControl);
@@ -426,8 +423,8 @@ void right()
 
 /**
 * Function       spin_right
-* @author        Kedro
-* @date          2019.10.19
+* @author        Danny
+* @date          2017.08.16
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -436,7 +433,6 @@ void right()
 */
 void spin_right()
 {
-  printf("spin_right\n");
   digitalWrite(Left_motor_go, HIGH);    
   digitalWrite(Left_motor_back, LOW);  
   softPwmWrite(Left_motor_pwm, CarSpeedControl);
@@ -450,8 +446,8 @@ void spin_right()
 
 /**
 * Function       back
-* @author        Kedro
-* @date          2019.10.19
+* @author        Danny
+* @date          2017.08.16
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -460,7 +456,6 @@ void spin_right()
 */
 void back()
 {
-  printf("back\n");
   digitalWrite(Left_motor_go, LOW);     
   digitalWrite(Left_motor_back, HIGH);  
   softPwmWrite(Left_motor_pwm, CarSpeedControl);
@@ -498,8 +493,8 @@ void whistle()
 
 /**
 * Function       servo_up
-* @author        Kedro
-* @date          2019.10.19
+* @author        Danny
+* @date          2017.08.16
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -518,8 +513,8 @@ void servo_up()
 
 /**
 * Function       servo_down
-* @author        Kedro
-* @date          2019.10.19
+* @author        Danny
+* @date          2017.08.16
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -538,8 +533,8 @@ void servo_down()
 
 /**
 * Function       servo_left
-* @author        Kedro
-* @date          2019.10.19
+* @author        Danny
+* @date          2017.08.16
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -558,8 +553,8 @@ void servo_left()
 
 /**
 * Function       servo_right
-* @author        Kedro
-* @date          2019.10.19
+* @author        Danny
+* @date          2017.08.16
 * @brief        
 * @param[in]     void
 * @param[out]    void
@@ -732,8 +727,8 @@ int StringFind(const char *pSrc, const char *pDst, int v_iStartPos)
 
 /**
 * Function       tcp_data_parse
-* @author        Danny,Kedro
-* @date          2019.10.19
+* @author        Danny
+* @date          2017.08.16
 * @brief         
 * @param[in]     void
 * @param[out]    void
@@ -742,74 +737,18 @@ int StringFind(const char *pSrc, const char *pDst, int v_iStartPos)
 */
 void tcp_data_parse()
 {
-  	if (StringFind((const char *)InputString, (const char *)"PTZ", 0) > 0)
-	{
-		int m_kp, i, ii;
-        
-		i = StringFind((const char *)InputString, (const char *)"PTZ", 0); 
-		ii = StringFind((const char *)InputString, (const char *)"#", i);
-		if (ii > i)
-		{
-			char m_skp[5] = {0};
-			memcpy(m_skp, InputString + i + 3, ii - i -3);
-			
-			m_kp = atoi(m_skp);        
-
-			g_frontservopos = 180 - m_kp;
-			NewLineReceived = 0;  
-			memset(InputString, 0x00, sizeof(InputString));
-			return;
-		}
-  	}
-  	 if (StringFind((const char *)InputString, (const char *)"CLR", 0) > 0)
- 	{
-		int m_kp, i, ii, red, green, blue;
-		char m_skp[5] = {0};
-		i = StringFind((const char *)InputString, (const char *)"CLR", 0);
-		ii = StringFind((const char *)InputString, (const char *)",", i);
-		if (ii > i)
-		{			
-			memcpy(m_skp, InputString + i + 3, ii - i -3);
-			m_kp = atoi(m_skp);
-			red =   m_kp;
-		}
-		i = StringFind((const char *)InputString, (const char *)"CLG", 0);
-		ii = StringFind((const char *)InputString, (const char *)",", i);
-		if (ii > i)
-		{
-			memcpy(m_skp, InputString + i + 3, ii - i -3);
-			m_kp = atoi(m_skp);
-			green =   m_kp;
-		}
-		i = StringFind((const char *)InputString, (const char *)"CLB", 0);
-		ii = StringFind((const char *)InputString, (const char *)"#", i);
-		if (ii > i)
-		{
-			memcpy(m_skp, InputString + i + 3, ii - i -3);
-			m_kp = atoi(m_skp);
-			blue =  m_kp;
-			color_led_pwm(red, green, blue);
-			NewLineReceived = 0;  
-			memset(InputString, 0x00, sizeof(InputString));
-			return;
-		}
-	}
-
-
-  if (StringFind((const char *)InputString, (const char *)"4WD", 0) > -1 &&
+  if(StringFind((const char *)InputString, (const char *)"exit", 0) > -1){
+  	g_CarState = enSTOP;
+  	g_DoContinue = 0;
+  	brake();
+  	printf("Exiting!\n");
+  }
+  else if (StringFind((const char *)InputString, (const char *)"4WD", 0) > -1 &&
 		                    StringFind((const char *)InputString,(const char *)"#",0) > 0){
 	int action = InputString[4] - '0';
-  	switch (action){
-      case enSTOP: brake(); break;
-      case enRUN: run(); break;
-      case enLEFT: left(); break;
-      case enRIGHT: right(); break;
-      case enBACK: back(); break;
-      case enTLEFT: spin_left(); break;
-      case enTRIGHT: spin_right(); break;
-      default: brake(); break;
-    }
-
+	int speed = InputString[5] - '0';
+	CarSpeedControl = speed;
+	g_CarState = action;
 
 	int cameraAction = InputString[9] - '0';
 	switch (cameraAction)
@@ -942,7 +881,7 @@ void *do_client_recv(void *arg)
 	int n = 0;
 	int sockfd = *(int *)arg;
 
-	while(1)
+	while(g_DoContinue)
 	{
 		memset(recvbuf,0,sizeof(recvbuf));
 		n = recv(sockfd,recvbuf,sizeof(recvbuf),0);	
@@ -968,12 +907,42 @@ void *do_client_recv(void *arg)
 	free(arg);
 	pthread_exit(NULL);
 }
+/**
+* Function       car_control
+* @author        Kedro
+* @date          2010.11.01
+* @brief         
+* @param[in]     void
+* @param[out]    void
+* @retval        void
+* @par History   
+*/
+void *car_control()
+{
+    while(g_DoContinue)
+	{
+		switch (g_CarState){
+	      case enSTOP: brake(); break;
+	      case enRUN: run(); break;
+	      case enLEFT: left(); break;
+	      case enRIGHT: right(); break;
+	      case enBACK: back(); break;
+	      case enTLEFT: spin_left(); break;
+	      case enTRIGHT: spin_right(); break;
+	      default: brake(); break;
+    	}
+    	brake();
+	}
+    brake();
+	 pthread_exit(NULL);
+}
+
 
 void *servo_control()
 {
 	int i_ServoState = 0;
 	int i_frontservopos = 0;
-    while(1)
+    while(g_DoContinue)
 	{
 	   switch (g_ServoState)
 	   {
@@ -1024,7 +993,7 @@ void *do_client_postback(void *arg)
 	int sockfd = *(int *)arg;
 	char str[1024] ={0};
 	char *pstr = str;
-	while(1){   
+	while(g_DoContinue){   
         memset(str,0,sizeof(str));
 		strcpy(str,tcp_data_postback());
 		//puts(str);
@@ -1079,6 +1048,8 @@ int main(int argc, const char *argv[])
    pthread_t tid1;
    pthread_t tid2;
    pthread_t tid3;
+   pthread_t tCarControl;
+
    int ret = 0;
    
  
@@ -1090,8 +1061,8 @@ int main(int argc, const char *argv[])
   pinMode(Right_motor_back, OUTPUT);
   
 
-  softPwmCreate(Left_motor_pwm,0,100); 
-  softPwmCreate(Right_motor_pwm,0,100);
+  softPwmCreate(Left_motor_pwm,0,10); 
+  softPwmCreate(Right_motor_pwm,0,10);
 
 
   pinMode(AvoidSensorLeft, INPUT);
@@ -1163,8 +1134,10 @@ int main(int argc, const char *argv[])
 	
 	while(1)
 	{
+		printf("Starting main()\n");
 		pconnect_fd = (int *)malloc(sizeof(int));
-		*pconnect_fd = accept(listen_fd,(struct sockaddr *)&client_addr,&len);		
+		*pconnect_fd = accept(listen_fd,(struct sockaddr *)&client_addr,&len);
+		printf("Accepted connection\n");
 		if(*pconnect_fd < 0)
 		{
 			perror("Fail to accept");	
@@ -1177,24 +1150,24 @@ int main(int argc, const char *argv[])
 		ret = pthread_create(&tid1,NULL,do_client_recv,(void *)pconnect_fd);
 		if(ret != 0)
 		{
-			fprintf(stderr,"Fail to pthread_create : %s\n",strerror(errno));	
+			fprintf(stderr,"Fail to pthread_create do_client_recv thread : %s\n",strerror(errno));	
 			exit(EXIT_FAILURE);
 		}
-		// ret = pthread_create(&tid3,NULL,servo_control,NULL);
-		// if(ret != 0)
-		// {
-		// 	fprintf(stderr,"Fail to pthread_create : %s\n",strerror(errno));	
-		// 	exit(EXIT_FAILURE);
-		// }
+		ret = pthread_create(&tCarControl,NULL,car_control,NULL);
+		if(ret != 0)
+		{
+			fprintf(stderr,"Fail to pthread_create car_control thread: %s\n",strerror(errno));	
+			exit(EXIT_FAILURE);
+		}
 		ret = pthread_create(&tid2,NULL,do_client_postback,(void *)pconnect_fd);
 		if(ret != 0)
 		{
-			fprintf(stderr,"Fail to pthread_create : %s\n",strerror(errno));	
+			fprintf(stderr,"Fail to pthread_create do_client_postback thread: %s\n",strerror(errno));	
 			exit(EXIT_FAILURE);
 		}
 		
 		pthread_detach(tid1);
-		//pthread_detach(tid3);
+		pthread_detach(tCarControl);
 		pthread_detach(tid2);
 	}
 	close(listen_fd);
