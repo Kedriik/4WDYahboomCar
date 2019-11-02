@@ -6,6 +6,8 @@ from threading import Lock
 import cv2
 import urllib 
 import numpy as np
+from getkeys import key_check
+from time import sleep
 
 
 TCP_IP = "192.168.50.1"
@@ -111,6 +113,7 @@ g_gather_response = True
 def get_response():
     while(g_gather_response):
         current_response  = s.recv(BUFFER_SIZE)
+        print(current_response)
         #if(current_response != response):
             #response = current_response
             #print(response.decode('utf-8'))
@@ -129,65 +132,48 @@ def get_image():
         if cv2.waitKey(25) & 0xFF==ord('q'):    
             cv2.destroyAllWindows()
             break
-        
+        sleep(0.1)
     cv2.destroyAllWindows()
 
-response_thread = Thread(target = get_response)
+#response_thread = Thread(target = get_response)
 image_thread = Thread(target = get_image)
-response_thread.start()
+#response_thread.start()
 image_thread.start()
 
 
-    
-while(1):
-    print("type a command")
-    command = input();
-    if command == 'exit':
-        g_gather_response = False;
-        g_gather_image = False
-        MESSAGE = command + '\n'
-        MESSAGE = "$exit#\n"
-        s.send(MESSAGE.encode())
-        break
-    elif command == 'cleft':
-        turnLeft()
-    elif command == 'cinit':
-        init()
-    elif command == 'cright':
-        turnRight()
-    elif command == 'cup':
-        turnUp()
-    elif command == 'cdown':
-        turnDown()
-    elif command == 'slower':
-        slower()
-    elif command == 'faster':
-        faster()
-    elif command == 'run':
-        run()
-    elif command == 'back':
-        back()
-    elif command == 'stop':
-        stop()
-    elif command == 'right':
-        right()
-    elif command == 'step right':
-        right()
-        stop();
-    elif command == 'step left':
-        left()
-        stop();
-    elif command == 'left':
-        left()
-    elif command == 'tright':
-        tright()
-    elif command == 'tleft':
-        tleft()        
-    else:
-        MESSAGE = command + '\n'
-        s.send(MESSAGE.encode())
+def keys_to_output(keys):
+    #[A,W,D,S]
+    output=[0,0,0,0]    
+    if 'A' in keys:
+        output[0] = 1
+    if 'W' in keys:
+        output[1] = 1
+    if 'D' in keys:
+        output[2] = 1
+    if 'S' in keys:
+        output[3] = 1        
+    return output
 
-response_thread.join();
+while(1):
+    keys   = key_check();
+    if 'A' in keys:
+        tleft()
+        stop();
+    elif 'W' in keys:
+        run()
+        stop()
+    elif 'D' in keys:
+        tright()
+        stop()
+    elif'S' in keys:
+        back()
+        stop()
+    else:
+        stop()
+    sleep(0.1)
+    current_response  = s.recv(BUFFER_SIZE)
+    print(current_response)
+#response_thread.join();
 image_thread.join();
 s.shutdown(1);
 

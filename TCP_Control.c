@@ -141,7 +141,8 @@ int NewLineReceived = 0;
 int g_CarState = enSTOP; 
 int g_DoContinue = 1;     
 int g_ServoState = enSERVOSTOP;
-char ReturnTemp[N] = {0};     
+char ReturnTemp[N] = {0};
+char OK[3] = "OK\n";    
 unsigned char g_frontservopos = 90;
 
 /**
@@ -257,7 +258,6 @@ float Distance()
 */
 void track_test()
 {
-
   TrackSensorLeftValue1 = digitalRead(TrackSensorLeftPin1);
   TrackSensorLeftValue2 = digitalRead(TrackSensorLeftPin2);
   TrackSensorRightValue1 = digitalRead(TrackSensorRightPin1);
@@ -343,13 +343,13 @@ void brake()
 void run(){
 	digitalWrite(Left_motor_go, HIGH);   
 	digitalWrite(Left_motor_back, LOW);  
-	softPwmWrite(Left_motor_pwm, CarSpeedControl);
+	//softPwmWrite(Left_motor_pwm, CarSpeedControl);
 
 	digitalWrite(Right_motor_go, HIGH);  
 	digitalWrite(Right_motor_back, LOW); 
-	softPwmWrite(Right_motor_pwm, CarSpeedControl);
+	//softPwmWrite(Right_motor_pwm, CarSpeedControl);
 	delay(100);
-  //brake();
+    brake();
 }
 
 /**
@@ -902,6 +902,8 @@ void *do_client_recv(void *arg)
 		{
 			tcp_data_parse();
 		}
+
+		n = send(sockfd,OK,3,0);	
 	}
 	close(sockfd);
 	free(arg);
@@ -1031,6 +1033,8 @@ void *do_client_postback(void *arg)
 */
 int main(int argc, const char *argv[])
 {
+ 	softPwmWrite(Right_motor_pwm, CarSpeedControl);
+ 	softPwmWrite(Left_motor_pwm, CarSpeedControl);
    char buf[1024] = {0};
    
    int listen_fd = 0;
@@ -1038,6 +1042,8 @@ int main(int argc, const char *argv[])
    int connect_fd = 0;
    
    struct sockaddr_in my_addr;
+
+   struct sockaddr_in control_addr;
    
    struct sockaddr_in client_addr;
   
@@ -1045,7 +1051,7 @@ int main(int argc, const char *argv[])
    int n = 0 ;
    int *pconnect_fd = NULL;
   
-   pthread_t tid1;
+   pthread_t tReceive;
    pthread_t tid2;
    pthread_t tid3;
    pthread_t tCarControl;
@@ -1147,7 +1153,7 @@ int main(int argc, const char *argv[])
 		printf("connect_fd : %d\n",*pconnect_fd);
 		printf("client IP : %s\n",inet_ntoa(client_addr.sin_addr));
 		printf("client port : %d\n", ntohs(client_addr.sin_port));
-		ret = pthread_create(&tid1,NULL,do_client_recv,(void *)pconnect_fd);
+		ret = pthread_create(&tReceive,NULL,do_client_recv,(void *)pconnect_fd);
 		if(ret != 0)
 		{
 			fprintf(stderr,"Fail to pthread_create do_client_recv thread : %s\n",strerror(errno));	
@@ -1159,16 +1165,16 @@ int main(int argc, const char *argv[])
 			fprintf(stderr,"Fail to pthread_create car_control thread: %s\n",strerror(errno));	
 			exit(EXIT_FAILURE);
 		}
-		ret = pthread_create(&tid2,NULL,do_client_postback,(void *)pconnect_fd);
+		//ret = pthread_create(&tid2,NULL,do_client_postback,(void *)pconnect_fd);
 		if(ret != 0)
 		{
 			fprintf(stderr,"Fail to pthread_create do_client_postback thread: %s\n",strerror(errno));	
 			exit(EXIT_FAILURE);
 		}
 		
-		pthread_detach(tid1);
+		pthread_detach(tReceive);
 		pthread_detach(tCarControl);
-		pthread_detach(tid2);
+		//pthread_detach(tid2);
 	}
 	close(listen_fd);
     exit(EXIT_SUCCESS);
